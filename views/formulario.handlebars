@@ -1,0 +1,55 @@
+<main>
+    {{!-- Formulário --}}
+    <div class="container">
+        <div class="row">
+            <div class="col-6 offset-3">
+
+                {{!-- Mensagens --}}
+                {{>mensagens}}
+
+                <form action="/cadastrar" method="post" enctype="multipart/form-data">
+                    <input type="text"   name="nome" class="form-control" placeholder="Nome do produto">
+                    <input type="number" name="valor" class="form-control" placeholder="Valor do produto">
+                    <input type="text" name="descricao" class="form-control" placeholder="Descricao do produto">
+                    
+                    <select name="categoria" class="form-control">
+                        <option value="">Categoria do produto</option>
+                        <option value="alimenticio">Áudio</option>
+                        <option value="eletronico">Acessórios</option>
+                        <option value="vestuario">Segurança</option>
+                        <option value="vestuario">Utilidades Domésticas</option>
+                        <option value="vestuario">Eletrônicos</option>
+                        <option value="vestuario">Smart Home</option>
+                        <option value="vestuario">Periféricos</option>
+                        <option value="vestuario">Utilidades</option>
+                        <option value="vestuario">Armazenamento</option>
+                        <option value="vestuario">Fotografia</option>
+                     
+                    </select>
+                    
+                    <input type="file"   name="imagem" class="form-control" >
+                    <input type="submit" class="btn btn-primary" value="Cadastrar">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{!-- Listagem de produtos --}}
+    <div class="container">
+        <div class="row">
+            {{#each produtos}}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card">
+                        <img src="../imagens/{{imagem}}">
+                        <div class="textos">
+                            <p>{{nome}}</p>
+                            <p>R${{valor}}</p>
+                        </div>
+                        <a href="/formularioEditar/{{id_produto}}" class="btn btn-warning">Alterar</a>
+                        <a href="/remover/{{id_produto}}/{{imagem}}" class="btn btn-danger">Remover</a>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</main>
