@@ -45,12 +45,13 @@ app.use(express.urlencoded({extended:false}));
 
 // });
 
+
 const conexao = mysql.createConnection({
     host:'127.0.0.1',
     user:'root',
     password:'MYSQLroot8110@yow',
     database:'vendedor_produto',
-    port:7777
+    port:3306
 });
 
 conexao.connect(function(erro){
