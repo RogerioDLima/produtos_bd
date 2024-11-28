@@ -47,7 +47,7 @@ app.use(express.urlencoded({extended:false}));
 
 
 const conexao = mysql.createConnection({
-    host:'127.0.0.1',
+    host:'localhost',
     user:'root',
     password:'MYSQLroot8110@yow',
     database:'vendedor_produto',
@@ -83,41 +83,37 @@ app.get('/:situacao', function(req, res){
 
 // Rota de cadastro
 app.post('/cadastrar', function(req, res){
-   try{
-     // Obter os dados que serão utiliados para o cadastro
-     let nome = req.body.nome;
-     let valor = req.body.valor;
-     let categoria = req.body.categoria;
-     let imagem = req.files.imagem.name;
+    try {
+        // Obter os dados do formulário
+        let { nome, id_vendedor, quantidade, preco, descricao, categoria } = req.body;
+        let imagem = req.files?.imagem?.name;
 
-     // Validar o nome do produto e o valor
-     if(nome == '' || valor == '' || isNaN(valor) || categoria == ''){
-        res.redirect('/falhaCadastro');
-     }else{
-        
-        // SQL
-        let sql = `INSERT INTO produtos (nome, valor, imagem, categoria) VALUES ('${nome}', ${valor}, '${imagem}', '${categoria}')`;
-
-        if (!categoria || categoria.trim() === '') {
-            categoria = 'Sem Categoria'; // Valor padrão
+        // Validar os dados
+        if (!nome || !preco || isNaN(preco) || !imagem || !categoria) {
+            return res.redirect('/falhaCadastro');
         }
-        
-        // Executar comando SQL
-        conexao.query(sql, function(erro, retorno){
-            // Caso ocorra algum erro
-            if(erro) throw erro;
 
-            // Caso ocorra o cadastro
-            req.files.imagem.mv(__dirname+'/imagens/'+req.files.imagem.name);
-            console.log(retorno);
+        // Valor padrão para categoria, se necessário
+        if (!categoria.trim()) {
+            categoria = 'Sem Categoria';
+        }
+
+        // SQL para inserção
+        let sql = `INSERT INTO produto (nome, id_vendedor, quantidade, preco, descricao, imagem, categoria) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+        // Executar o comando SQL
+        conexao.query(sql, [nome, id_vendedor, quantidade, preco, descricao, imagem, categoria], function(erro) {
+            if (erro) throw erro;
+
+            // Mover a imagem para o diretório correto
+            req.files.imagem.mv(__dirname + '/imagens/' + imagem);
+
+            res.redirect('/okCadastro');
         });
-
-        // Retornar para a rota principal
-        res.redirect('/okCadastro');
-     }
-   }catch(erro){
-    res.redirect('/falhaCadastro');
-   }
+    } catch (erro) {
+        res.redirect('/falhaCadastro');
+    }
 });
 
 // Rota para remover produtos
@@ -165,57 +161,70 @@ app.get('/formularioEditar/:id_produto', function(req, res){
 });
 
 // Rota para editar produtos
-app.post('/editar', function(req, res){
+app.post('/editar', function(req, res) {
+    try {
+        // Obter os dados do formulário
+        let id_produto = req.body.id_produto; // Certifique-se de que o ID do produto seja enviado
+        let nome = req.body.nome;
+        let descricao = req.body.descricao;
+        let preco = req.body.preco;
+        let novaImagem = req.files ? req.files.imagem : null;
 
-    // Obter os dados do formulário
-    let nome = req.body.nome;
-    let valor = req.body.valor;
-    let id_produto  = req.body.id_produto;
-    let nomeImagem = req.body.nomeImagem;
-
-    // Validar nome do produto e valor
-    if(nome == '' || valor == '' || isNaN(valor)){
-        res.redirect('/falhaEdicao');
-    }else {
-
-        // Definir o tipo de edição
-        try{
-            // Objeto de imagem
-            let imagem = req.files.imagem;
-
-            // SQL
-            let sql = `UPDATE Produto SET nome='${nome}', valor=${valor}, imagem='${imagem}', categoria='${categoria}' WHERE id_produto=${id_produto}`;
-
-    
-            // Executar comando SQL
-            conexao.query(sql, function(erro, retorno){
-                // Caso falhe o comando SQL
-                if(erro) throw erro;
-
-                // Remover imagem antiga
-                fs.unlink(__dirname+'/imagens/'+nomeImagem, (erro_imagem)=>{
-                    console.log('Falha ao remover a imagem.');
-                });
-
-                // Cadastrar nova imagem
-                imagem.mv(__dirname+'/imagens/'+imagem.name);
-            });
-        }catch(erro){
-            
-            // SQL
-            let sql = `UPDATE Produto SET nome='${nome}', valor=${valor} WHERE id_produto=${id_produto}`;
-        
-            // Executar comando SQL
-            conexao.query(sql, function(erro, retorno){
-                // Caso falhe o comando SQL
-                if(erro) throw erro;
-            });
+        // Validar campos obrigatórios
+        if (!id_produto || !nome || !descricao || !preco || isNaN(preco)) {
+            return res.redirect('/falhaEdicao');
         }
 
-        // Redirecionamento
-        res.redirect('/okEdicao');
+        // Buscar o produto no banco para verificar a imagem existente
+        let sqlSelect = `SELECT imagem FROM Produto WHERE id_produto = ${id_produto}`;
+        conexao.query(sqlSelect, function(erro, resultados) {
+            if (erro) throw erro;
+
+            let imagemAntiga = resultados[0]?.imagem;
+
+            // Atualizar a imagem se uma nova foi enviada
+            if (novaImagem) {
+                let novaImagemNome = novaImagem.name;
+
+                // Salvar nova imagem no diretório
+                novaImagem.mv(__dirname + '/imagens/' + novaImagemNome, function(erro) {
+                    if (erro) throw erro;
+
+                    // Remover a imagem antiga, se existir
+                    if (imagemAntiga) {
+                        fs.unlink(__dirname + '/imagens/' + imagemAntiga, (erro) => {
+                            if (erro) console.log('Erro ao remover a imagem antiga:', erro);
+                        });
+                    }
+
+                    // SQL para atualizar com a nova imagem
+                    let sqlUpdate = `UPDATE Produto 
+                                     SET nome = ?, descricao = ?, preco = ?, imagem = ? 
+                                     WHERE id_produto = ?`;
+
+                    conexao.query(sqlUpdate, [nome, descricao, preco, novaImagemNome, id_produto], function(erro, retorno) {
+                        if (erro) throw erro;
+                        res.redirect('/okEdicao');
+                    });
+                });
+            } else {
+                // SQL para atualizar sem alterar a imagem
+                let sqlUpdateSemImagem = `UPDATE Produto 
+                                          SET nome = ?, descricao = ?, preco = ? 
+                                          WHERE id_produto = ?`;
+
+                conexao.query(sqlUpdateSemImagem, [nome, descricao, preco, id_produto], function(erro, retorno) {
+                    if (erro) throw erro;
+                    res.redirect('/okEdicao');
+                });
+            }
+        });
+    } catch (erro) {
+        console.error('Erro ao editar o produto:', erro);
+        res.redirect('/falhaEdicao');
     }
 });
+
 
 // Servidor
 app.listen(8080);

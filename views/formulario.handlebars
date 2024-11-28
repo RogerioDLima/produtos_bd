@@ -5,12 +5,14 @@
             <div class="col-6 offset-3">
 
                 {{!-- Mensagens --}}
-                {{>mensagens}}
+                {{> mensagens}}
 
                 <form action="/cadastrar" method="post" enctype="multipart/form-data">
-                    <input type="text"   name="nome" class="form-control" placeholder="Nome do produto">
-                    <input type="number" name="valor" class="form-control" placeholder="Valor do produto">
-                    <input type="text" name="descricao" class="form-control" placeholder="Descricao do produto">
+                    <input type="text" name="nome" class="form-control" placeholder="Nome do produto">
+                    <input type="number" name="preco" class="form-control" placeholder="Preço do produto">
+                    <input type="number" name="id_vendedor" class="form-control" placeholder="ID do Vendedor">
+                    <input type="number" name="quantidade" class="form-control" placeholder="Quantidade de Produtos">
+                    <input type="text" name="descricao" class="form-control" placeholder="Descrição do produto">
                     
                     <select name="categoria" class="form-control">
                         <option value="">Categoria do produto</option>
@@ -24,10 +26,9 @@
                         <option value="vestuario">Utilidades</option>
                         <option value="vestuario">Armazenamento</option>
                         <option value="vestuario">Fotografia</option>
-                     
                     </select>
                     
-                    <input type="file"   name="imagem" class="form-control" >
+                    <input type="file" name="imagem" class="form-control" >
                     <input type="submit" class="btn btn-primary" value="Cadastrar">
                 </form>
             </div>
@@ -40,10 +41,10 @@
             {{#each produtos}}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <div class="card">
-                        <img src="../imagens/{{imagem}}">
+                        <img src="../imagens/{{imagem}}" alt="{{nome}}">
                         <div class="textos">
                             <p>{{nome}}</p>
-                            <p>R${{valor}}</p>
+                            <p>R${{preco}}</p> <!-- Mudança aqui de {{valor}} para {{preco}} -->
                         </div>
                         <a href="/formularioEditar/{{id_produto}}" class="btn btn-warning">Alterar</a>
                         <a href="/remover/{{id_produto}}/{{imagem}}" class="btn btn-danger">Remover</a>

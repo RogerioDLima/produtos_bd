@@ -1,21 +1,39 @@
 <main>
-
-    {{!-- Formulário --}}
+    <!-- Formulário -->
     <div class="container">
         <div class="row">
             <div class="col-6 offset-3">
                 <form action="/editar" method="post" enctype="multipart/form-data">
-                    
-                    <img src="../imagens/{{produto.imagem}}">
+                    <!-- Exibir a imagem atual -->
+                    <div class="mb-3">
+                        <img src="/imagens/{{produto.imagem}}" alt="Imagem do Produto" class="img-fluid mb-3">
+                    </div>
 
-                    <input type="hidden" name="nomeImagem" value="{{produto.imagem}}">
-                    <input type="hidden" name="codigo" value="{{produto.id_produto}}">
-                    <input type="text"   name="nome"   value="{{produto.nome}}" class="form-control" placeholder="Nome do produto">
-                    <input type="text"   name="descricao"   value="{{produto.descricao}}" class="form-control" placeholder="Descricao do Produto">
-                    <input type="number" name="valor"  value="{{produto.valor}}" class="form-control" placeholder="Valor do produto">
-                    <input type="file"   name="imagem" class="form-control" >
-                    <input type="submit" class="btn btn-primary" value="Alterar">
-                    <a href="/" class="btn btn-secondary">Cancelar</a>
+                    <!-- Campos do formulário -->
+                    <input type="hidden" name="id_produto" value="{{produto.id_produto}}">
+
+                    <div class="mb-3">
+                        <input type="text" name="nome" value="{{produto.nome}}" class="form-control" placeholder="Nome do produto" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="text" name="descricao" value="{{produto.descricao}}" class="form-control" placeholder="Descrição do produto" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="number" name="preco" value="{{produto.preco}}" class="form-control" placeholder="Preço do produto" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="file" name="imagem" class="form-control">
+                        <small class="form-text text-muted">Deixe em branco para manter a imagem atual.</small>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Alterar</button>
+                        <a href="/" class="btn btn-secondary">Cancelar</a>
+                    </div>
                 </form>
             </div>
         </div>

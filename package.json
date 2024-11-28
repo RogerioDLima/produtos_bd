@@ -17,7 +17,7 @@
   "dependencies": {
     "bootstrap": "^5.3.1",
     "express": "^4.18.2",
-    "express-fileupload": "^1.4.0",
+    "express-fileupload": "^1.5.1",
     "express-handlebars": "^7.0.7",
     "mysql2": "^3.5.0",
     "nodemon": "^2.0.22",
