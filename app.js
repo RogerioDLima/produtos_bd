@@ -27,20 +27,22 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
 // Configuração de conexão online
-// const conexao = mysql.createConnection({
-//     host:'ywsa8i.easypanel.host',
-//     user:'mysql',
-//     password:'MYSQLroot8110@yow',
-//     database:'testes'
-// });
+const conexao = mysql.createConnection({
+    host:'ywsa8i.easypanel.host',
+    user:'mysql',
+    password:'MYSQLroot8110@yow',
+    database:'testes',
+    port: 7777
+
+});
 
 // Configuração de conexão no local host:
-const conexao = mysql.createConnection({
-    host:'127.0.0.1',
-    user:'root',
-    password:'MYSQLroot8110@yow',
-    database:'vendedor_produto'
-});
+// const conexao = mysql.createConnection({
+//     host:'127.0.0.1',
+//     user:'root',
+//     password:'MYSQLroot8110@yow',
+//     database:'vendedor_produto'
+// });
 
 conexao.connect(function(erro){
     if(erro) throw erro;
