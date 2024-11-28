@@ -36,22 +36,22 @@ app.use(express.urlencoded({extended:false}));
 
 // });
 
+// const conexao = mysql.createConnection({
+//     host:'testes_database_for_utm',
+//     user:'root',
+//     password:'MYSQLroot8110@yow',
+//     database:'vendedor_produto',
+//     port: 3306
+
+// });
+
 const conexao = mysql.createConnection({
-    host:'testes_database_for_utm',
+    host:'127.0.0.1',
     user:'root',
     password:'MYSQLroot8110@yow',
     database:'vendedor_produto',
-    port: 3306
-
+    port:7777
 });
-
-// Configuração de conexão no local host:
-// const conexao = mysql.createConnection({
-//     host:'127.0.0.1',
-//     user:'root',
-//     password:'MYSQLroot8110@yow',
-//     database:'vendedor_produto'
-// });
 
 conexao.connect(function(erro){
     if(erro) throw erro;
