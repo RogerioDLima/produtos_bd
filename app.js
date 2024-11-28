@@ -32,7 +32,7 @@ const conexao = mysql.createConnection({
     user:'mysql',
     password:'MYSQLroot8110@yow',
     database:'testes',
-    port: 7777
+    port: 3336
 
 });
 
